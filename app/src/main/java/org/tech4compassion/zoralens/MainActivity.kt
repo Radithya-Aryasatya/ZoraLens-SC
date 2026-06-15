@@ -37,7 +37,7 @@ import java.io.ByteArrayOutputStream
 import org.tech4compassion.zoralens.BuildConfig
 
 
-// Inside your MainActivity.kt file
+
 private val geminiMainModel = GenerativeModel (
     modelName = "gemini-3.1-flash-lite",
     apiKey = BuildConfig.GEMINI_API_KEY
@@ -46,8 +46,8 @@ private val geminiMainModel = GenerativeModel (
 val localLogList = mutableStateListOf<String>()
 
 fun screenLog(tag: String, message: String) {
-    Log.d(tag, message) // Keeps your Android Studio Logcat working
-    if (localLogList.size > 40) { localLogList.removeAt(0) } // Cap memory
+    Log.d(tag, message)
+    if (localLogList.size > 40) { localLogList.removeAt(0) } 
     val timeStamp = java.text.SimpleDateFormat("HH:mm:ss.SSS", java.util.Locale.getDefault()).format(java.util.Date())
     localLogList.add("[$timeStamp] [$tag] $message")
 }
@@ -102,9 +102,8 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    // Add this inside your MainActivity class
+    
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        // Bluetooth clickers usually send VOLUME_UP or ENTER
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_ENTER) {
             screenLog("ZoraClick", "Input Trigger Clicked: KeyCode $keyCode")
             triggerScan()
@@ -160,7 +159,6 @@ fun LensScreen(modifier: Modifier = Modifier, onSpeak: (String) -> Unit, onStopS
     val isCurrentlyCoolingDown = currentTime - lastScanTime < cooldownMs
 
     if (showLogView) {
-        // --- NEW LOG MONITOR OVERLAY PAGE ---
         Column(
             modifier = modifier.fillMaxSize().padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -288,7 +286,7 @@ suspend fun fetchAndDescribe(context: Context): String {
                 finalBmp.compress(Bitmap.CompressFormat.JPEG, 100, baos) // 100 = No lossy compression
                 val jpegBytes = baos.toByteArray()
                 val imgSizeKb = baos.size() / 1024
-                baos.close() // Close it immediately to free memory
+                baos.close() // free memory
 
                 launch (Dispatchers.IO) {
                     saveToGallery(context, jpegBytes)
@@ -297,7 +295,6 @@ suspend fun fetchAndDescribe(context: Context): String {
                 rawDownloaded.recycle()
                 screenLog("ZoraTime", "2. Image Proc: ${System.currentTimeMillis() - procStart}ms | Size: ${imgSizeKb}KB")
 
-                // 3. ESSENTIAL PROMPT (RESTORED)
                 // 3. ESSENTIAL PROMPT
                 Log.d("ZoraLens", "Using Model: ${geminiMainModel.modelName}")
 
@@ -347,8 +344,8 @@ suspend fun fetchAndDescribe(context: Context): String {
     }
 }
 
-// This helps the app talk to the XIAO via USB
-// This helps the app talk to the XIAO via USB
+
+// app talk to the XIAO via USB
 fun captureFrameFromUsb(context: Context): Bitmap? {
     val port = ensureUsbConnected(context) ?: return null
     return try {
@@ -367,7 +364,6 @@ fun captureFrameFromUsb(context: Context): Bitmap? {
         val startTime = System.currentTimeMillis()
         var lastDataTime = System.currentTimeMillis()
 
-        // Continuous data capture loop
         // Continuous data capture loop with fail-fast guard
         while (System.currentTimeMillis() - startTime < 8000) {
             val len = port.read(tempBuffer, 100)
@@ -481,7 +477,7 @@ fun ensureUsbConnected(context: Context): com.hoho.android.usbserial.driver.UsbS
         port.dtr = true
         port.rts = true
         activity.usbPort = port
-        // Give it ONE long breath after the first cold boot
+        // long breath after the first cold boot
         Thread.sleep(2000)
         return port
     } catch (e: Exception) {
